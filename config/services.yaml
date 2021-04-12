@@ -11,6 +11,11 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+    _instanceof:
+        JMS\AopBundle\Aop\PointcutInterface:
+            tags: ['jms_aop.pointcut']
+
+
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
@@ -20,6 +25,7 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Tests/'
+            - '../src/AOP'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -27,5 +33,14 @@ services:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
 
+    service_context_interceptor:
+        class: App\AOP\ServiceInterceptor
+        public: true
+
+    service_context_pointcut:
+        class: App\AOP\ServicePointcut
+        public: true
+        tags:
+            - { name: jms_aop.pointcut, interceptor: service_context_interceptor }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

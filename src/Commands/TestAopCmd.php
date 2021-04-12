@@ -35,6 +35,8 @@ class TestAopCmd extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $returnedMsg = $this->serviceA->doSomething();
+        $assertion =  "Intercepted: ServiceA.dosomething: reached!" == $this->serviceA->doSomething() ;
+        return $assertion ? 0 : 1;
     }
 
 }

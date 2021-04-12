@@ -15,6 +15,6 @@ class ServiceA
 
     public function doSomething(): string
     {
-        return "ServiceA.dosomething: Reached!";
+        return "ServiceA.dosomething: reached!";
     }
 }
