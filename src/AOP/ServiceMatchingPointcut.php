@@ -6,12 +6,12 @@ namespace App\AOP;
 
 use JMS\AopBundle\Aop\PointcutInterface;
 
-class ServicePointcut implements PointcutInterface
+class ServiceMatchingPointcut implements PointcutInterface
 {
 
 
     /**
-     * ServicePointcut constructor.
+     * ServiceMatchingPointcut constructor.
      */
     public function __construct()
     {

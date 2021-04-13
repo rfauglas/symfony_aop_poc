@@ -6,41 +6,53 @@
 parameters:
 
 services:
-    # default configuration for services in *this* file
-    _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-
-    _instanceof:
-        JMS\AopBundle\Aop\PointcutInterface:
-            tags: ['jms_aop.pointcut']
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
-            - '../src/Tests/'
-            - '../src/AOP'
+  _instanceof:
+    JMS\AopBundle\Aop\PointcutInterface:
+      tags: [ 'jms_aop.pointcut' ]
 
-    # controllers are imported separately to make sure services can be injected
-    # as action arguments even if you don't extend any base controller class
-    App\Controller\:
-        resource: '../src/Controller/'
-        tags: ['controller.service_arguments']
 
-    service_context_interceptor:
-        class: App\AOP\ServiceInterceptor
-        public: true
+  # makes classes in src/ available to be used as services
+  # this creates a service per class whose id is the fully-qualified class name
+  App\:
+    resource: '../src/'
+    public: true
+    exclude:
+      - '../src/DependencyInjection/'
+      - '../src/Entity/'
+      - '../src/Kernel.php'
+      - '../src/Tests/'
+      - '../src/AOP/'
 
-    service_context_pointcut:
-        class: App\AOP\ServicePointcut
-        public: true
-        tags:
-            - { name: jms_aop.pointcut, interceptor: service_context_interceptor }
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+  # controllers are imported separately to make sure services can be injected
+  # as action arguments even if you don't extend any base controller class
+  App\Controller\:
+    resource: '../src/Controller/'
+    tags: [ 'controller.service_arguments' ]
+
+  service_context_interceptor:
+    class: App\AOP\ServiceInterceptor
+    public: true
+
+  annotated_service_context_interceptor:
+    class: App\AOP\ServiceInterceptor
+    public: true
+
+  App\AOP\ServiceMatchingPointcut:
+    public: true
+    tags:
+      - { name: jms_aop.pointcut, interceptor: service_context_interceptor }
+
+  App\AOP\ServiceAnnotationReaderPointcut:
+    public: true
+    arguments:
+      $excludePath: ['excl']
+      $includePath: ['incl']
+    tags:
+      - { name: jms_aop.pointcut, interceptor: annotated_service_context_interceptor }
+
